@@ -7,16 +7,7 @@ import (
   "context"
   "bytes"
   "io"
-  //"log"
   "html/template"
-  "time"
-  "go.mongodb.org/mongo-driver/mongo"
-  "go.mongodb.org/mongo-driver/mongo/options"
-  //"os"
-  //"github.com/gin-contrib/sessions"
-  //"go.mongodb.org/mongo-driver/bson"
-  //"github.com/gin-gonic/gin"
-  //"github.com/gin-contrib/sessions/cookie"
 )
 
 var page = `
@@ -24,7 +15,7 @@ var page = `
 <html>
   <head>
     <meta charset="utf-8">
-    <meta nom="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>I WILL BE A LEGEND!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
   </head>
@@ -43,37 +34,37 @@ var page = `
               <div class="field">
                 <label>Nom:</label>
                 <div class="control">
-                  <input type="text" nom="nom" class="input">
+                  <input type="text" name="nom" class="input">
                 </div>
               </div>
               <div class="field">
                 <label>Cognoms:</label>
                 <div class="control">
-                  <input type="text" nom="cognoms" class="input">
+                  <input type="text" name="cognoms" class="input">
                 </div>
               </div>
               <div class="field">
                 <label>Posicio::</label>
                 <div class="control">
-                  <input type="text" nom="posicio" class="input">
+                  <input type="text" name="posicio" class="input">
                 </div>
               </div>
               <div class="field">
                 <label>Company:</label>
                 <div class="control">
-                  <input type="text" nom="company" class="input">
+                  <input type="text" name="company" class="input">
                 </div>
               </div>
               <div class="field">
                 <label>Usuari:</label>
                 <div class="control">
-                  <input type="text" nom="usuari" class="input">
+                  <input type="text" name="usuari" class="input">
                 </div>
               </div>
               <div class="field">
                 <label>Contrasenya:</label>
                 <div class="control">
-                  <input type="text" nom="contrasenya" class="input">
+                  <input type="text" name="contrasenya" class="input">
                 </div>
               </div>
               <div class="field">
@@ -96,7 +87,7 @@ var login = `
 <html>
   <head>
     <meta charset="utf-8">
-    <meta nom="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>I WILL BE A LEGEND!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
   </head>
@@ -116,18 +107,25 @@ var login = `
               <div class="field">
                 <label>Usuari:</label>
                 <div class="control">
-                  <input type="text" nom="usuari" class="input">
+                  <input type="text" name="usuari" class="input">
                 </div>
               </div>
               <div class="field">
                 <label>Contrasenya:</label>
                 <div class="control">
-                  <input type="text" nom="contrasenya" class="input">
+                  <input type="text" name="contrasenya" class="input">
                 </div>
               </div>
               
             </form>
           </div>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="section-{{.Contrasenya}}">
+      <div class="container">
+        <div class="notification is-danger">
+          <a class="button is-succes">aceptar</a>
         </div>
       </div>
     </section>
@@ -155,30 +153,6 @@ func NovaAplicacio(s *live.Socket) *MevaAplicacio {
 }
 
 func main() {
-
-  fmt.Printf("Connectant amb base de dades\n")
-
-  ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-  clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-  client, err := mongo.Connect(context.TODO(), clientOptions)
-
-  if err != nil {
-    fmt.Printf("Error connectant %s\n", err)
-  }
-  err = client.Ping(context.TODO(), nil)
-
-  if err != nil {
-    fmt.Printf("Error fent ping %s\n", err)
-  }
-  fmt.Println("Connected to MongoDB!")
-
-
-  //collection := client.Database("testing").Collection("jugadors")
-
-  
-
-  
-
   
   h, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
   j, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
@@ -228,9 +202,6 @@ func main() {
   }
 
   h.HandleEvent("elmeuformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-
-    ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-
     m := NovaAplicacio(s)
     nom := p.String("nom")
     cognoms := p.String("cognoms")
@@ -245,18 +216,7 @@ func main() {
     m.Usuari = usuari
     m.Contrasenya = contrasenya
     
-    //session := sessions.Default(x)
-    //collection := client.Database("testing").Collection("jugadors")
-    //id, err := collection.InsertOne(ctx, bson.M{"nom": nom, "cognoms": cognoms, "posicio": posicio, "company": company, "usuari": usuari, "contrasenya": contrasenya})
 
-   /* if err != nil {
-      fmt.Printf("FATAL %v\n", err)
-        os.Exit(5)
-    }*/
-    
-    //fmt.Printf("fet %+v\n", id)
-    //session.Set("jugador_id", id)
-    //session.Save()
     return m, nil
   })
 
@@ -278,12 +238,32 @@ func main() {
   
   })
 
+/*  j.HandleEvent("verificar", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+    m := NovaAplicacio(s)
+    // accio := p.String("laverificacio")
+    usuari := p.String("usuari")
+    contrasenya := p.String("contrasenya")
+    m.Usuari = usuari
+    m.Contrasenya = contrasenya
+
+    if m.Contrasenya != "12345" {
+      fmt.Println("ERROR")
+    }else{
+      fmt.Println("OK")
+    }
+    fmt.Println(m.Contrasenya)
+    return m, nil
+  
+  })*/
+
+
+
   http.Handle("/register", h)
   http.Handle("/login", j)
   http.Handle("/live.js", live.Javascript{})
-  erri := http.ListenAndServe(":8081", nil)
-  if erri != nil {
-    fmt.Println(erri)
+  err := http.ListenAndServe(":8081", nil)
+  if err != nil {
+    fmt.Println(err)
   }
 
 }
