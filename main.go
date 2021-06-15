@@ -9,9 +9,9 @@ import (
   "io"
   //"log"
   "html/template"
-  "time"
-  "go.mongodb.org/mongo-driver/mongo"
-  "go.mongodb.org/mongo-driver/mongo/options"
+  //"time"
+  //"go.mongodb.org/mongo-driver/mongo"
+  //"go.mongodb.org/mongo-driver/mongo/options"
   //"os"
   //"github.com/gin-contrib/sessions"
   //"go.mongodb.org/mongo-driver/bson"
@@ -97,7 +97,7 @@ var login = `
   <head>
     <meta charset="utf-8">
     <meta nom="viewport" content="width=device-width, initial-scale=1">
-    <title>I WILL BE A LEGEND!</title>
+    <title>YOU WILL BE A LEGEND!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
   </head>
   <body>
@@ -106,14 +106,12 @@ var login = `
         <div class="columns">
           <div class="column">
             <p class="subtitle">
-              Login en:<strong>PadelJM</strong>!
+              Login en:<strong> JM stadium </strong>!
             </p>
-            <span class="tag is-success">Astonishing</span>
           </div>
           <div class="column">
-            <form method="POST" live-change="loginformulari">
-      
-              <div class="field">
+            <form method="POST" class="box" live-submit="loginformulari">
+              <div class="field" >
                 <label>Usuari:</label>
                 <div class="control">
                   <input type="text" nom="usuari" class="input">
@@ -125,7 +123,11 @@ var login = `
                   <input type="text" nom="contrasenya" class="input">
                 </div>
               </div>
-              
+              <div class="field">
+                <div class="control">
+                  <button class="button is-success" type="submit">Login</button>                  
+                </div>
+              </div>              
             </form>
           </div>
         </div>
@@ -156,7 +158,7 @@ func NovaAplicacio(s *live.Socket) *MevaAplicacio {
 
 func main() {
 
-  fmt.Printf("Connectant amb base de dades\n")
+  /*fmt.Printf("Connectant amb base de dades\n")
 
   ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
   clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
@@ -170,16 +172,12 @@ func main() {
   if err != nil {
     fmt.Printf("Error fent ping %s\n", err)
   }
-  fmt.Println("Connected to MongoDB!")
+  fmt.Println("Connected to MongoDB!")*/
 
 
   //collection := client.Database("testing").Collection("jugadors")
 
-  
 
-  
-
-  
   h, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
   j, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
 
@@ -229,7 +227,7 @@ func main() {
 
   h.HandleEvent("elmeuformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 
-    ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+    //ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
     m := NovaAplicacio(s)
     nom := p.String("nom")
@@ -267,12 +265,20 @@ func main() {
     m.Usuari = usuari
     m.Contrasenya = contrasenya
     
-    if m.Contrasenya != "12345" {
+    /*if m.Contrasenya != "12345" {
       fmt.Println("ERROR")
-      /*c.Redirect(302, "/signin")*/
+      c.Redirect(302, "/signin")
     }else{
       fmt.Println("OK")
+    }*/
+
+    if m.Usuari == "jm" && m.Contrasenya == "pimpam"{
+      fmt.Println("OK")
+      /*c.Redirect(302, "/signin")*/
+    }else{
+      fmt.Println("ERROR")
     }
+    fmt.Println(m.Usuari)
     fmt.Println(m.Contrasenya)
     return m, nil
   

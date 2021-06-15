@@ -233,6 +233,7 @@ func main() {
     }else{
       fmt.Println("OK")
     }
+    fmt.Println(m.Usuari)
     fmt.Println(m.Contrasenya)
     return m, nil
   
