@@ -42,6 +42,9 @@ var login = `
             <p class="subtitle">
               Login en:<strong> JM stadium </strong>!
             </p>
+            <figure class="image is-250x250">
+              <img class=image src="https://www.imim.cat/media/comu/mobile/2.jpg">
+            </figure>
           </div>
           <div class="column">
             <form method="POST" class="box" live-submit="loginformulari">
@@ -74,6 +77,10 @@ var login = `
 type MevaAplicacio struct {
   Usuari string
   Contrasenya string
+  Nom string
+  Cognoms string
+  Email string
+  Grup string
 }
 
 func NovaAplicacio(s *live.Socket) *MevaAplicacio {
@@ -86,14 +93,14 @@ func NovaAplicacio(s *live.Socket) *MevaAplicacio {
 
 func main() {
 
-  j, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
+  h, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
 
-  j.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
+  h.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
     m := NovaAplicacio(s)
     return m, nil
   }
 
-  j.Render = func(c context.Context, data interface{}) (io.Reader, error) {
+  h.Render = func(c context.Context, data interface{}) (io.Reader, error) {
     var buf bytes.Buffer
     t, err := template.New("blablabla").Parse(login)
     if err != nil {
@@ -110,27 +117,35 @@ func main() {
     return &buf, nil
   }
 
-  j.HandleEvent("loginformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+  h.HandleEvent("loginformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
     m := NovaAplicacio(s)
+    
     m.Usuari = p.String("usuari")
     m.Contrasenya =  p.String("contrasenya")
     
     if m.Usuari == "jm" && m.Contrasenya == "pimpam"{
       fmt.Println("OK")
+      
       u, _ := url.Parse("/info")
       s.Redirect(u)
+      
       uLock.Lock()
       usuaris[s.Session.ID] = m.Usuari
       uLock.Unlock()
+      
+      miInformacion()
+    
     }else{
       fmt.Println("ERROR")
     }
+    
     fmt.Println(m.Usuari)
     fmt.Println(m.Contrasenya)
     return m, nil
   })
   
-  http.Handle("/login", j)
+  //http.Handle("/info", x)
+  http.Handle("/login", h)
   http.Handle("/live.js", live.Javascript{})
   err := http.ListenAndServe(":8081", nil)
   if err != nil {

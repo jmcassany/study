@@ -1,0 +1,68 @@
+var info = `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta nom="viewport" content="width=device-width, initial-scale=1">
+    <title>YOU WILL BE A LEGEND!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+  </head>
+  <body>
+    <section class="section">
+      <div class="container-fluid">
+        <div class="columns">
+          <div class="column">
+            <p class="subtitle">
+              Informació usuari:<strong> Hello </strong>!
+            </p>
+          <figure class="image is-128x128">
+            <img class=is-rounded src="https://media-exp1.licdn.com/dms/image/C5603AQEGWFeheGOWyA/profile-displayphoto-shrink_200_200/0/1576758118970?e=1629331200&v=beta&t=bbgd5RKV15grOdy2KbGMG36ilYwiRi1DpEdcI_Wq0PU">
+          </figure>
+          </div>
+          <div class="column">
+            <form method="POST" class="box" live-submit="infoformulari">
+              <div class="field" >
+                <label>Nom:</label>
+                <div class="control">
+                  <input type="text" name="nom" class="input">
+                </div>
+              </div>
+              <div class="field" >
+                <label>Cognoms:</label>
+                <div class="control">
+                  <input type="text" name="cognoms" class="input">
+                </div>
+              </div>
+              <div class="field" >
+                <label>Email:</label>
+                <div class="control">
+                  <input type="text" name="nom" class="input">
+                </div>
+              </div>      
+              <div class="field" >
+                <label>Grup:</label>
+                <div class="control">
+                  <input type="text" name="nom" class="input">
+                </div>  
+              </div>
+              <div class="field is-grouped">
+                <p class="control">
+                  <button class="button is-success" type="submit">
+                    Continuar treballant
+                  </button>
+                </p>
+                <p class="control">
+                  <button class="button is-danger" type="submit">
+                    A parir panteras
+                  </button>
+                </p>
+              </div>                    
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="/live.js"></script>
+  </body>
+</html>
+`
