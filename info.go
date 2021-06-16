@@ -43,7 +43,7 @@ var info = `
             </figure>
           </div>
           <div class="column">
-            <form method="GET" class="box" live-submit="infoformulari">
+            <form method="POST" class="box" live-submit="logoutformulari">
               <figure class="image is-128x128">
                 <img class=is-rounded src="https://media-exp1.licdn.com/dms/image/C5603AQEGWFeheGOWyA/profile-displayphoto-shrink_200_200/0/1576758118970?e=1629331200&v=beta&t=bbgd5RKV15grOdy2KbGMG36ilYwiRi1DpEdcI_Wq0PU">
               </figure>
@@ -78,11 +78,16 @@ var info = `
                   </button>
                 </p>
                 <p class="control">
-                  <button class="button is-danger" type="submit">
+                  <button class="button is-link" type="submit">
                     A parir panteras
                   </button>
                 </p>
-              </div>                    
+                <p class="control">
+                  <button class="button is-danger" live-click="logoutformulari">
+                  LogOut
+                  </button>
+                </p>
+              </div>             
             </form>
           </div>
         </div>
@@ -97,6 +102,7 @@ type User struct {
   Cognoms string
   Email string
   Grup string
+  
 }
 
 func NouUsuari(s *live.Socket) *User {
@@ -142,7 +148,7 @@ func miInformacion() *live.Handler {
     return &buf, nil
   }
 
-  h.HandleEvent("infoformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+  /*h.HandleEvent("infoformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
     m := NouUsuari(s)
     m.Nom = p.String("nom")
     m.Cognoms = p.String("cognoms")
@@ -152,7 +158,23 @@ func miInformacion() *live.Handler {
     return m, nil
   })
   
+  return h*/
+
+  h.HandleEvent("logoutformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+    m := NouLogout(s)
+    
+    u,_ := url.Parse("/logout")
+    s.Redirect(u)
+
+    uLock.Lock()
+    usuaris[s.Session.ID] = m.Sortir
+    uLock.Unlock()
+    
+    return m, nil
+  })
+
   return h
+
 
 }
 
