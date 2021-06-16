@@ -47,6 +47,13 @@ var login = `
             </figure>
           </div>
           <div class="column">
+            {{ if .Errors }} 
+            <article class="message is-danger">
+              <div class="message-header">
+                <p> {{ .Errors }} </p>  
+              </div>
+            </article>
+            {{ end }}
             <form method="POST" class="box" live-submit="loginformulari">
               <div class="field" >
                 <label>Usuari:</label>
@@ -74,35 +81,32 @@ var login = `
   </body>
 </html>
 `
-type MevaAplicacio struct {
+type Login struct {
   Usuari string
   Contrasenya string
-  Nom string
-  Cognoms string
-  Email string
-  Grup string
+  Errors string
 }
 
-func NovaAplicacio(s *live.Socket) *MevaAplicacio {
-  m, ok := s.Assigns().(*MevaAplicacio)
+func NouLogin(s *live.Socket) *Login {
+  m, ok := s.Assigns().(*Login)
   if !ok {
-    m = &MevaAplicacio{ }
+    m = &Login{ }
   }
   return m
 }
 
-func main() {
+func NewLoginHandler() *live.Handler {
 
-  h, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
+  h, _ := live.NewHandler(cookieStore)
 
   h.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
-    m := NovaAplicacio(s)
+    m := NouLogin(s)
     return m, nil
   }
 
   h.Render = func(c context.Context, data interface{}) (io.Reader, error) {
     var buf bytes.Buffer
-    t, err := template.New("blablabla").Parse(login)
+    t, err := template.New("login").Parse(login)
     if err != nil {
       buf.WriteString(err.Error())
       return &buf, nil
@@ -118,7 +122,7 @@ func main() {
   }
 
   h.HandleEvent("loginformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-    m := NovaAplicacio(s)
+    m := NouLogin(s)
     
     m.Usuari = p.String("usuari")
     m.Contrasenya =  p.String("contrasenya")
@@ -132,23 +136,16 @@ func main() {
       uLock.Lock()
       usuaris[s.Session.ID] = m.Usuari
       uLock.Unlock()
-      
-      miInformacion()
-    
+
     }else{
       fmt.Println("ERROR")
+      m.Errors = "Error en l'usuari o la contrasenya"
     }
     
     fmt.Println(m.Usuari)
     fmt.Println(m.Contrasenya)
     return m, nil
   })
-  
-  //http.Handle("/info", x)
-  http.Handle("/login", h)
-  http.Handle("/live.js", live.Javascript{})
-  err := http.ListenAndServe(":8081", nil)
-  if err != nil {
-    fmt.Println(err)
-  }
+
+  return h
 }

@@ -3,14 +3,14 @@ package main
 import (
   "github.com/jfyne/live"
   "net/http"
-  "fmt"
+  //"fmt"
   "context"
   "bytes"
   "io"
   //"log"
   "html/template"
   //"sync"
-  //net/url"
+  "net/url"
   //"time"
   //"go.mongodb.org/mongo-driver/mongo"
   //"go.mongodb.org/mongo-driver/mongo/options"
@@ -92,18 +92,42 @@ var info = `
   </body>
 </html>
 `
-func miInformacion() {
+type User struct {
+  Nom string
+  Cognoms string
+  Email string
+  Grup string
+}
 
-  h, _ := live.NewHandler(live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret")))
+func NouUsuari(s *live.Socket) *User {
+  m, ok := s.Assigns().(*User)
+  if !ok {
+    return &User{}
+  }
+  return m
+}
+
+
+func miInformacion() *live.Handler {
+
+  h, _ := live.NewHandler(cookieStore)
 
   h.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
-    m := NovaAplicacio(s)
+    
+    _, ok := usuaris[s.Session.ID]
+    if !ok {
+      ul, _ :=url.Parse("/login")
+      s.Redirect(ul)
+      return nil, nil
+    }
+
+    m := NouUsuari(s)
     return m, nil
   }
 
   h.Render = func(c context.Context, data interface{}) (io.Reader, error) {
     var buf bytes.Buffer
-    t, err := template.New("blablabla2").Parse(info)
+    t, err := template.New("info").Parse(info)
     if err != nil {
       buf.WriteString(err.Error())
       return &buf, nil
@@ -119,7 +143,7 @@ func miInformacion() {
   }
 
   h.HandleEvent("infoformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-    m := NovaAplicacio(s)
+    m := NouUsuari(s)
     m.Nom = p.String("nom")
     m.Cognoms = p.String("cognoms")
     m.Email = p.String("email")
@@ -128,11 +152,7 @@ func miInformacion() {
     return m, nil
   })
   
-  http.Handle("/info", h)
-  err := http.ListenAndServe(":8081", nil)
-  if err != nil {
-    fmt.Println(err)
-  }
+  return h
 
 }
 
