@@ -81,9 +81,6 @@ func NewLogoutHandler() *live.Handler {
 
   h.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
     
-    //var usuaris = map[string]string{}
-    //_, ok := usuaris[s.Session.ID]
-    
     delete(usuaris, s.Session.ID)
     
     /*u, _ := url.Parse("/login")
