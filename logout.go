@@ -22,10 +22,6 @@ import (
   //"github.com/kataras/iris"
 )
 
-//var usuaris = map[string]string{}
-//var uLock sync.Mutex
-
-
 var logout = `
 <!DOCTYPE html>
 <html>
@@ -89,7 +85,10 @@ func NewLogoutHandler() *live.Handler {
     //_, ok := usuaris[s.Session.ID]
     
     delete(usuaris, s.Session.ID)
-  
+    
+    /*u, _ := url.Parse("/login")
+    s.Redirect(u)*/
+
     m := NouLogout(s)
     return m, nil
 
