@@ -10,7 +10,7 @@ import (
   //"log"
   "html/template"
   //"sync"
-  //"net/url"
+  "net/url"
   //"time"
   //"go.mongodb.org/mongo-driver/mongo"
   //"go.mongodb.org/mongo-driver/mongo/options"
@@ -43,18 +43,6 @@ var logout = `
               <img class=image src="https://www.imim.cat/media/comu/mobile/2.jpg">
             </figure>
           </div>
-          <div class="column">
-            <form method="POST" class="box" live-click="logoutformulari">
-              <figure class="image is-128x128">
-                <img class=is-rounded src="https://media-exp1.licdn.com/dms/image/C5603AQEGWFeheGOWyA/profile-displayphoto-shrink_200_200/0/1576758118970?e=1629331200&v=beta&t=bbgd5RKV15grOdy2KbGMG36ilYwiRi1DpEdcI_Wq0PU">
-              </figure>                    
-              <article class="message is-danger">
-                <div class="message-header">
-                  <p> Has tancat la sessió. Fins aviat =) </p>  
-                </div>
-              </article>
-            </form>
-          </div>
         </div>
       </div>
     </section>
@@ -81,17 +69,27 @@ func NewLogoutHandler() *live.Handler {
 
   h.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
     
-    delete(usuaris, s.Session.ID)
+    /*m := NouLogout(s)
     
-    /*u, _ := url.Parse("/login")
-    s.Redirect(u)*/
+    _, ok := usuaris[s.Session.ID]
+    if ok {
+      delete(usuaris, s.Session.ID)
+    } else {
+      u, _ := url.Parse("/login")
+      s.Redirect(u)
+      return nil, nil
+    }
+    return m, nil*/
+
+    ul, _ := url.Parse("/login")
+    s.Redirect(ul)
 
     m := NouLogout(s)
     return m, nil
-
   }
 
   h.Render = func(c context.Context, data interface{}) (io.Reader, error) {
+    
     var buf bytes.Buffer
     t, err := template.New("logout").Parse(logout)
     if err != nil {
@@ -107,13 +105,6 @@ func NewLogoutHandler() *live.Handler {
 
     return &buf, nil
   }
-
-  h.HandleEvent("logoutformulari", func(c context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-    m := NouLogout(s)
-    
-    
-    return m, nil
-  })
-
   return h
+  
 }
