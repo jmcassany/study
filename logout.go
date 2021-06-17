@@ -10,7 +10,7 @@ import (
   //"log"
   "html/template"
   //"sync"
-  "net/url"
+  //"net/url"
   //"time"
   //"go.mongodb.org/mongo-driver/mongo"
   //"go.mongodb.org/mongo-driver/mongo/options"
@@ -19,7 +19,7 @@ import (
   //"go.mongodb.org/mongo-driver/bson"
   //"github.com/gin-gonic/gin"
   //"github.com/gin-contrib/sessions/cookie"
-  "github.com/kataras/iris"
+  //"github.com/kataras/iris"
 )
 
 //var usuaris = map[string]string{}
@@ -85,35 +85,13 @@ func NewLogoutHandler() *live.Handler {
 
   h.Mount = func(c context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
     
-    /*h.Mount = func(c iris.Context) {
-
-    cookieStore.Destroy(c)
-    ul, _ :=url.Parse("/login")
-    c.Redirect(ul)
-
-    m := NouLogout(c)
-    return m*/
-
-    /*_, ok := usuaris[s.Session.ID]
-    if ok = "nil" {
-      ul, _ :=url.Parse("/logout")
-      s.Redirect(ul)
-      return nil, nil
-    } */
-
-    /*session.Options.MaxAge = -1
-    err = session.Save(req, w)
-    if err != nil {
-      t.Fatal("failed to delete session", err)
-    }*/
-
+    //var usuaris = map[string]string{}
+    //_, ok := usuaris[s.Session.ID]
     
-
-
-
+    delete(usuaris, s.Session.ID)
+  
     m := NouLogout(s)
     return m, nil
-
 
   }
 

@@ -7,7 +7,7 @@ import (
 )
 
 var cookieStore = live.NewCookieStore("lamevaaplicacio", []byte("elmeusecret"))
-//var cookieDelete = live.NewCookieStore("lamevaaplicacio2", []byte("elmeusecret2"))
+
 
 func main(){
   
